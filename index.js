@@ -39,7 +39,7 @@ let initialQuery = _.reduce(process.argv, (query, arg) => {
   return query + ' ' + arg;
 }, '').trim();
 
-require('./greeting')()
+require('./greeting')({silent: initialQuery})
   .then(() => {
     if (argv.session) {
       startSession(initialQuery);
