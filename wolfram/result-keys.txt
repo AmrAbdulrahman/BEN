@@ -1,0 +1,5 @@
+result
+response
+recorded weather
+basic information
+name

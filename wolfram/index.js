@@ -5,6 +5,7 @@ let Wolfram = new Client(config.WOLFRAM_APP_ID);
 let say = require('../say');
 let q = require('q');
 let hooks = require('./hooks');
+let utils = require('../utils');
 
 module.exports = (query) => {
   let defer = q.defer();
@@ -32,22 +33,17 @@ module.exports = (query) => {
             // format subtext, indent it one tab
             textResult += '\n\t' + text.replace(new RegExp('\n', 'ig'), '\n\t');
 
-            let resultProperties = [
-              'result',
-              'response',
-              'recorded weather',
-              'basic information', // for humans
-              'name'
-            ];
+            let resultProperties = utils.readList('./wolfram/result-keys.txt');
 
             if (_.find(resultProperties, (prop) => podTitle.toLowerCase().indexOf(prop) !== -1)) {
               audioResult += ` ${text}`;
             }
 
-            let inputInterpretationProperty = 'input interpretation';
-
-            if (inputInterpretationProperty === podTitle.toLowerCase() && hooks[text]) {
-              hook = hooks[text];
+            // check if hook is registered for this input
+            // i use 'input interpretation' to make use of wolfram unifying
+            // hundreds of cases to a single key
+            if (podTitle.toLowerCase() === 'input interpretation' && hooks[text]) {
+              hook = hooks[text]; // just save it, we call it later, after displying the result
             }
           });
         });
@@ -58,11 +54,14 @@ module.exports = (query) => {
       audioResult = audioResult.trim();
 
       if (audioResult) {
-        say(`well, "${query}" is`, {format: 'cyan', silent: true})
-          .then(() => say(audioResult, {format: 'bold.cyan'}))
+        console.log(`well, "${query}" is`.cyan);
+
+        say(formatAudioResult(audioResult), {format: 'bold.cyan'})
           .then(() => console.log(textResult.grey))
           .then(() => hook && hook())
-          .then(defer.resolve);
+          .then(defer.resolve)
+          .catch(defer.reject);
+
       } else if (textResult) {
         say('Can\'t find something to say out loud, you better read. : |', {format: 'blue'});
         console.log(textResult);
@@ -76,3 +75,17 @@ module.exports = (query) => {
 
   return defer.promise;
 };
+
+function formatAudioResult(text) {
+  let ignoreList = utils.readList('./wolfram/ignore.txt');
+
+  // process ignored list
+  _.each(ignoreList, (ignoreTerm) => {
+    // found a match, remove it
+    if (text.indexOf(ignoreTerm) !== -1) {
+      text = text.replace(ignoreTerm, '');
+    }
+  });
+
+  return text;
+}
