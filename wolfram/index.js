@@ -25,16 +25,19 @@ module.exports = (query) => {
 
       _.each(result.queryresult.pod, (pod) => {
         let podTitle = pod.$.title;
-        textResult += '\n' + podTitle + ': ';
+        textResult += '\n' + (podTitle + ': ').bold;
 
         _.each(pod.subpod, (subpod) => {
           _.each(subpod.plaintext, (text) => {
-            textResult += '\n\t' + text;
+            // format subtext, indent it one tab
+            textResult += '\n\t' + text.replace(new RegExp('\n', 'ig'), '\n\t');
 
             let resultProperties = [
               'result',
               'response',
               'recorded weather',
+              'basic information', // for humans
+              'name'
             ];
 
             if (_.find(resultProperties, (prop) => podTitle.toLowerCase().indexOf(prop) !== -1)) {
@@ -48,6 +51,8 @@ module.exports = (query) => {
             }
           });
         });
+
+        textResult += '\n';
       });
 
       audioResult = audioResult.trim();
@@ -59,11 +64,11 @@ module.exports = (query) => {
           .then(() => hook && hook())
           .then(defer.resolve);
       } else if (textResult) {
-        say('Can\'t find something to say out loud, you better read.');
+        say('Can\'t find something to say out loud, you better read. : |', {format: 'blue'});
         console.log(textResult);
         defer.resolve();
       } else {
-        say('Sorry, can\'t find something about this.');
+        say('Sorry, can\'t find something about this. : (', {format: 'red'});
         defer.resolve();
       }
     }
