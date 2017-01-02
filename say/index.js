@@ -14,14 +14,6 @@ module.exports = (text, options) => {
 
   options = options || {};
 
-  // pretty console log
-  console.log(_.get(text, options.format, text));
-
-  if (options.silent) {
-    defer.resolve();
-    return defer.promise;
-  }
-
   // process ignored list
   _.each(ignoreList, (ignoreTerm) => {
     // found a match, remove it
@@ -29,6 +21,14 @@ module.exports = (text, options) => {
       text = text.replace(ignoreTerm, '');
     }
   });
+
+  // pretty console log
+  console.log(_.get(text, options.format, text));
+
+  if (options.silent) {
+    defer.resolve();
+    return defer.promise;
+  }
 
   if (text) {
     // speak then resolve the promise
