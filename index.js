@@ -1,40 +1,47 @@
 let _ = require('lodash');
+let colors = require('colors');
 let say = require('./say');
 let wolfram = require('./wolfram');
-let terminal = require('terminal-kit').terminal;
-let stdin = process.openStdin();
 
-say('Good morning Amr!');
+var argv = require('yargs')
+  .default('session', true) // start interactive session or not
+  .argv;
 
 function startSession(query = null) {
   cursor();
 
   if (query) {
-    terminal(query + '\n');
+    console.log(query);
     processQuery(query).then(cursor);
   }
 
   // listen to stdin
-  stdin.addListener('data', (data) => {
+  process.stdin.on('data', (data) => {
     let query = data.toString().trim();
     processQuery(query).then(cursor);
   });
 }
 
 function cursor() {
-  terminal.brightBlack('\n' + _.repeat('.', 80) + '\n');
-  terminal.bold.blue('> ');
+  process.stdout.write(_.repeat('.', 80).cyan + '\n');
+  process.stdout.write('> '.cyan.bold);
 }
 
 function processQuery(query) {
   return wolfram(query);
 }
 
-let initialQuery = null;
+let initialQuery = _.reduce(process.argv, (query, arg) => {
+  if (_.startsWith(arg, '--') || arg.indexOf('/node') > 0 || arg.indexOf('/ben') > 0) {
+    return query;
+  }
 
-if (process.argv.length >= 3) {
-  initialQuery = _.drop(process.argv, 2); // skip "node" and "ben"
-  initialQuery = _.join(initialQuery, ' ');
-}
+  return query + ' ' + arg;
+}, '').trim();
 
-startSession(initialQuery);
+require('./greeting')()
+  .then(() => {
+    if (argv.session) {
+      startSession(initialQuery);
+    }
+  })
