@@ -28,7 +28,7 @@ function cursor() {
 }
 
 function processQuery(query) {
-  return wolfram(query);
+  return wolfram(query).catch((error) => console.log(error));
 }
 
 let initialQuery = _.reduce(process.argv, (query, arg) => {
