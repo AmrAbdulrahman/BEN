@@ -1,5 +1,5 @@
 let q = require('q');
-let say = require('../say');
+let { say } = require('../output');
 
 module.exports = {
   'Goodbye.': function() {
