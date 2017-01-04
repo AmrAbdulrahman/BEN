@@ -1,6 +1,5 @@
 let _ = require('lodash');
-let colors = require('colors');
-let say = require('./say');
+let { log } = require('./output');
 let wolfram = require('./wolfram');
 
 var argv = require('yargs')
@@ -11,7 +10,7 @@ function startSession(query = null) {
   cursor();
 
   if (query) {
-    console.log(query);
+    log(query);
     processQuery(query).then(cursor);
   }
 
@@ -28,7 +27,7 @@ function cursor() {
 }
 
 function processQuery(query) {
-  return wolfram(query).catch((error) => console.log(error));
+  return wolfram.terminal(query).catch((error) => log(error.red));
 }
 
 let initialQuery = _.reduce(process.argv, (query, arg) => {
@@ -39,7 +38,7 @@ let initialQuery = _.reduce(process.argv, (query, arg) => {
   return query + ' ' + arg;
 }, '').trim();
 
-require('./greeting')({silent: initialQuery})
+require('./greeting')({say: !initialQuery})
   .then(() => {
     if (argv.session) {
       startSession(initialQuery);
