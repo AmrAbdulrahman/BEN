@@ -10,8 +10,9 @@ class Card extends CardBase {
     this.key = 'time';
     this.config = {
       say: true,
-      tick: {
-        every: 1,
+      startAt: 0,
+      repeat: {
+        every: 2,
         unit: 'minutes',
       },
     };

@@ -10,8 +10,9 @@ class Card extends CardBase {
     this.key = 'joke';
     this.config = {
       say: true,
-      tick: {
-        every: 60,
+      startAt: 0,
+      repeat: {
+        every: 30,
         unit: 'seconds',
         startingFrom: new Date(0, 0, 0, 20, 21, 22), // Y, M, D, h, m, s
       },

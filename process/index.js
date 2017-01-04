@@ -32,10 +32,11 @@ _.each(cards, (card) => {
     card: card,
   });
 
-  debug(`Scheduled first event for '${card.key}' card.`);
+  debug(`\nScheduled first event for '${card.key}' card.`);
+  debug(`It runs every ${(card.config.repeat.every + '').bold} ${card.config.repeat.unit.bold}`);
 });
 
-debug(`Scheduled ${cards.length} events.`)
+debug(`\nScheduled ${cards.length} events.`)
 
 // 1. check for all instances that's less than or equal current time
 // 2. run them all in order
@@ -44,15 +45,14 @@ function tick() {
   let now = (new Date()).getTime();
   let events = [];
 
-  debug('');
-  debug('Tick...');
+  debug('\nTick...');
 
   // 1. get them all
   while (Q.top() && Q.top().time <= now) {
     events.push(Q.pop());
   }
 
-  debug(`Got ${events.length} event(s) to run`);
+  debug(`Got ${(events.length + '').bold} event(s) to run | Queue has ${(Q.count + '').bold} scheduled events`);
 
   // recursively because we depend on promises
   // every event execution has to wait the one before
@@ -62,7 +62,8 @@ function tick() {
     (function runEvent(index) {
       let card = events[index].card;
       let cardRunningStartTime = (new Date()).getTime();
-      debug(`Started '${card.key}' ...`);
+
+      debug(`\nStarted '${card.key}' ...`);
 
       card
         .run()

@@ -29,6 +29,10 @@ class EventsQueue {
 
     this.events.splice(index, 0, event);
   }
+
+  get count() {
+    return this.events.length;
+  }
 };
 
 module.exports = EventsQueue;
