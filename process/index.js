@@ -21,8 +21,8 @@ let EventsQueue = require('./events-queue');
 let Q = new EventsQueue();
 
 let cards = [
-  require('../cards/time'),
-  require('../cards/joke'),
+  require('./cards/time'),
+  require('./cards/joke'),
 ];
 
 // initially fill in the queue with all cards

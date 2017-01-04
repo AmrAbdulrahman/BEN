@@ -1,4 +1,4 @@
-let { say, notify } = require('../output');
+let { say, notify } = require('../../output');
 let q = require('q');
 let CardBase = require('./card-base');
 let moment = require('moment');

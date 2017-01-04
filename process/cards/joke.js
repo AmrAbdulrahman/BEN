@@ -1,5 +1,5 @@
-let wolfram = require('../wolfram');
-let { say, notify } = require('../output');
+let wolfram = require('../../wolfram');
+let { say, notify } = require('../../output');
 let q = require('q');
 let CardBase = require('./card-base');
 
